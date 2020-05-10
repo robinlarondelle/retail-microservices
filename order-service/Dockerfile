@@ -2,7 +2,7 @@
 FROM node:14.2.0-alpine3.10
 
 # Select what directory the following commands should use
-WORKDIR /u sr/src/app
+WORKDIR /usr/src/app
 
 # The copy command tells docker to copy the files from the current directory
 # to a certain directory INSIDE the docker container
@@ -20,7 +20,7 @@ RUN npm install
 # This command tells Docker to copy ALL the source files to the workdirectory
 COPY . .
 
-EXPOSE 3000
+EXPOSE 4000
 
 # This command makes the application run, just like you would in a normal terminal
 CMD ["npm", "start"]
