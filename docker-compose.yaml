@@ -1,4 +1,30 @@
 version: "3.8"
 services:
-  app:
-    build: ./dir
+  support-service:
+    build: .
+    ports:
+    - "3001:3000"
+    depends_on: 
+    - mongo
+  order-service:
+    build: .
+    ports:
+    - "3002:3000"
+    depends_on: 
+    - mongo
+  transporter-service:
+    build: .
+    ports:
+    - "3003:3000"
+    depends_on: 
+    - mongo
+  catalog-service:
+    build: .
+    ports:
+    - "3004:3000"
+    depends_on: 
+    - mongo
+  mongo:
+    image: mongo
+    ports:
+    - "27017:27017"
