@@ -1,24 +1,44 @@
 //Get the correct environmnent variables
-if (process.env.NODE_ENV == "development"){
-  require('dotenv').config({ path: "../env/dev.env" }) 
-} else {
-  require('dotenv').config({ path: "./environment/prod.env" })
-}
+if (process.env.NODE_ENV == "development") require('dotenv').config({ path: "../env/dev.env" }) 
+else require('dotenv').config({ path: "./environment/prod.env" })
 
+//dependencies imports
 const express = require('express')
 const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
+const mongoose = require('mongoose')
 
+//properties setup
 const app = express()
-const port = process.env.PORT || "3000"
 app.use(bodyParser.json()) //Parse request body to JSON
-if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show all logs when in production mode
 app.use(cors('*'))
+if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show all logs when in production mode
+const port = process.env.PORT || "7000"
+const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 
-app.use("/test", (req, res, next) => {
-  res.status(200).json({"message": "succes!"}).end()
+let databaseString;
+if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.supportServiceDatabase}`
+else databaseString = `${dbConfig.localhostUrl}${dbConfig.supportServiceDatabase}`
+
+//MongoDB database connection
+mongoose.connect(databaseString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
 })
+.then(() => console.log('successfully connected to the database'))
+.catch(err => {
+  console.log('error connecting to the database')
+  console.log(err);
+
+  //Kill the service on error
+  process.exit()
+})
+
+const supportTicketRoute = require("./routes/support.route")
+
+app.use("/support", supportTicketRoute)
+
 
 //Catch all non existing endpoints
 app.use("*", function (req, res, next) {
@@ -27,7 +47,7 @@ app.use("*", function (req, res, next) {
 
 //Error middleware
 app.use((err, req, res, next) => {
-  res.status(err.status || 404).json(err).send();
+  res.status(err.code || 404).json(err).send();
 })
 
 //Setup server on designated port
