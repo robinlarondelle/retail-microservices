@@ -1,7 +1,7 @@
 let express = require('express');
 let routes = express.Router();
-let catalogController = require('../controllers/catalogController');
-let tpvController = require('../controllers/tpvController');
+let catalogController = require('../controllers/catalog.controller');
+let tpvController = require('../controllers/tpv.controller');
 
 routes.get('/catalog', catalogController.getProducts);
 routes.post('/catalog', catalogController.postProduct);
