@@ -2,7 +2,7 @@
 FROM node:14.2.0-alpine3.10
 
 # Select what directory the following commands should use
-WORKDIR /u sr/src/app
+WORKDIR /usr/src/app
 
 # The copy command tells docker to copy the files from the current directory
 # to a certain directory INSIDE the docker container
