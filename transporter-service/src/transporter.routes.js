@@ -1,5 +1,5 @@
 const routes = require('express').Router();
-const transportController = require("./transport.controller.js")
+const transportController = require("./transporter.controller.js")
 
 routes.get("/", transportController.getAll)
 routes.get("/:id", transportController.getById)
