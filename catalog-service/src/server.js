@@ -5,9 +5,6 @@ const cors = require("cors") // Access control
 const mongoose = require('mongoose')
 const ApiError = require('./models/error.model')
 
-//Routes require
-const router = require('./routes/router')
-
 const app = express()
 
 //Get the correct environmnent variables
@@ -43,6 +40,7 @@ if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show al
 app.use(cors('*'))
 
 // Routes all calls through the router
+const router = require('./routes/router')
 app.use('/', router)
 
 //Catch all non existing endpoints
@@ -52,7 +50,7 @@ app.use("*", function (req, res, next) {
 
 //Error middleware
 app.use(function(err, req, res, next) {
-  res.status(err.status || 500).json(err).send();
+  res.status(err.code || 500).json(err).send();
 })
 
 //Setup server on designated port
