@@ -21,3 +21,7 @@
 * `-it` - Interactive terminal: makes you able to interact with the terminal (^C to quit the container)
 * `-p` - Port: map the open port from the container to a free port on the machine
 * `-d` - detached mode: don't display the terminal of the container (opposite of -it)
+
+
+## Docker Compose
+Use `docker-compose up --build` to make sure the containers are running
