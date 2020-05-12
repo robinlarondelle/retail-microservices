@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
+const mongoose = require('mongoose'); // MongoDB
 const cors = require("cors") // Access control
 
 //Routes require
@@ -8,6 +9,12 @@ const orderRoutes = require('./routes/order.routes')
 
 const app = express()
 const port = process.env.PORT || "3000"
+
+// MongoDB
+// mongoose.Promise = global.Promise;
+// if (process.env.NODE_ENV !== 'test') {
+// 	mongoose.connect('{{Connection string here}}', { useNewUrlParser: true, useFindAndModify: false });
+// }
 
 //Get the correct environmnent variables
 if (process.env.NODE_ENV == "development"){
