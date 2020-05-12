@@ -1,0 +1,8 @@
+{
+    "baseUrl": "mongodb://mongodb:27017",
+    "localhostUrl": "mongodb://localhost:27017",
+    "supportServiceDatabase": "/support-service",
+    "orderServiceDatabase": "/order-service",
+    "catalogtServiceDatabase": "/catalogt-service",
+    "transporterServiceDatabase": "/transporter-service"
+}
