@@ -2,6 +2,7 @@ const express = require('express')
 const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
+const mongoose = require('mongoose')
 
 //Routes require
 const router = require('./routes/router')
@@ -15,6 +16,27 @@ if (process.env.NODE_ENV == "development"){
 } else {
   require('dotenv').config({ path: "./environment/prod.env" })
 }
+
+const port = process.env.PORT || "7000"
+const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
+
+let databaseString;
+if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogServiceDatabase}`
+else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogServiceDatabase}`
+
+//MongoDB database connection
+mongoose.connect(databaseString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('successfully connected to the database'))
+.catch(err => {
+  console.log('error connecting to the database')
+  console.log(err);
+
+  //Kill the service on error
+  process.exit()
+})
 
 // Routes usage
 app.use('/api', router)
