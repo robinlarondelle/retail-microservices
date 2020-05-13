@@ -35,12 +35,14 @@ mongoose.connect(databaseString, {
         process.exit()
     })
 
+
+console.log("hoi")
 app.use(bodyParser.json()) //Parse request body to JSON
 if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show all logs when in production mode
 app.use(cors('*'))
 
 // Routes all calls through the router
-const router = require('./transporter.routes')
+const router = require('./routes/transporter.routes')
 app.use('/', router)
 
 //Catch all non existing endpoints
