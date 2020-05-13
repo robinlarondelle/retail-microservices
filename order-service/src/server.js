@@ -14,7 +14,7 @@ if (process.env.NODE_ENV == "development"){
   require('dotenv').config({ path: "./environment/prod.env" })
 }
 
-const port = process.env.PORT || "6000"
+const port = process.env.PORT || "4000"
 const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 
 let databaseString;
