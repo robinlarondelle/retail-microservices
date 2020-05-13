@@ -5,6 +5,10 @@ const Transporter = require('./transporter.model')
 const Product = require('./product.model')
 
 const OrderSchema = new Schema({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: [true, 'ObjectID is required']
+    },
     shipped: {
         type: Boolean,
         required: [true, 'Shipped is required.']
