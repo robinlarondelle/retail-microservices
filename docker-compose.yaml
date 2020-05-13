@@ -7,19 +7,19 @@ services:
     volumes:
       - mongodata:/data/db
 
-  # order-service:
-  #   container_name: order-service
-  #   build:
-  #     context: .
-  #     dockerfile: ./order-service/Dockerfile
-  #   ports:
-  #   - "4000:4000"
-  #   depends_on: 
-  #   - mongodb
-  #   environment:
-  #     - PORT=4000
-  #     - DOCKER=true
-    # - rabbitmq
+  order-service:
+    container_name: order-service
+    build:
+      context: .
+      dockerfile: ./order-service/Dockerfile
+    ports:
+    - "4000:4000"
+    depends_on: 
+    - mongodb
+    environment:
+      - PORT=4000
+      - DOCKER=true
+   # - rabbitmq
 
   transporter-service:
     container_name: transporter-service
