@@ -3,6 +3,6 @@
     "localhostUrl": "mongodb://localhost:27017",
     "supportServiceDatabase": "/support-service",
     "orderServiceDatabase": "/order-service",
-    "catalogtServiceDatabase": "/catalogt-service",
+    "catalogServiceDatabase": "/catalog-service",
     "transporterServiceDatabase": "/transporter-service"
 }
