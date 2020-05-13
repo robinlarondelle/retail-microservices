@@ -1,5 +1,5 @@
 const ApiError = require('../models/error.model')
-const ThirdPartyVendor = require('../models/tpv.model/tpv.schema')
+const ThirdPartyVendor = require('../models/product.schema')
 const mongoose = require('mongoose');
 
 module.exports = {
