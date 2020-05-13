@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const transporter = mongoose.model("transporter", new Schema({
+const transporter = mongoose.model("Transporter", new Schema({
     name: {
-        name: String,
+        type: String,
         required: true
     }
 }))

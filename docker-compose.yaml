@@ -21,18 +21,18 @@ services:
   #     - DOCKER=true
     # - rabbitmq
 
-  # transporter-service:
-  #   container_name: transporter-service
-  #   build:
-  #     context: .
-  #     dockerfile: ./transporter-service/Dockerfile
-  #   ports:
-  #   - "5000:5000"
-  #   depends_on: 
-  #   - mongodb
-  #   environment:
-  #     - PORT=5000
-  #     - DOCKER=true
+  transporter-service:
+    container_name: transporter-service
+    build:
+       context: .
+       dockerfile: ./transporter-service/Dockerfile
+    ports:
+    - "5000:5000"
+    depends_on:
+    - mongodb
+    environment:
+      - PORT=5000
+      - DOCKER=true
     # - rabbitmq
     
   catalog-service:
