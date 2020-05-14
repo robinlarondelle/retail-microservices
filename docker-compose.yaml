@@ -8,6 +8,12 @@ services:
       - "27017:27017"
     volumes:
       - mongodata:/data/db
+      
+  rabbitmq:
+    container_name: rabbitmq-retail
+    image: rabbitmq
+    ports:
+      - "5672:5672"
 
   order-service:
     container_name: order-service
@@ -46,10 +52,13 @@ services:
     - "6000:6000"
     depends_on: 
     - mongodb
+    - rabbitmq
     environment:
       - PORT=6000
       - DOCKER=true
-    # - rabbitmq
+    links: 
+      - rabbitmq
+    restart: always
 
   support-service:
     container_name: support-service
@@ -65,10 +74,5 @@ services:
       - DOCKER=true
     # - rabbitmq
 
-
-  # rabbitmq:
-  #   image: rabbitmq
-  #   ports:
-  #   - "5672:5672"
 volumes:
   mongodata:

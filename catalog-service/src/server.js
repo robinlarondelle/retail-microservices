@@ -4,6 +4,8 @@ const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
 const mongoose = require('mongoose')
 const ApiError = require('./models/error.model')
+const amqp = require('amqplib/callback_api')
+const consumer = require('./message_exchange/consumer')
 
 const app = express()
 
@@ -34,6 +36,32 @@ mongoose.connect(databaseString, {
   //Kill the service on error
   process.exit()
 })
+
+// Connects to the RabbitMQ server
+amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
+  if (err){
+    console.log("Could not connect to RabbitMQ server")
+  }
+
+  // Creates a channel to communicatie through
+  conn.createChannel(function(err, channel) {
+    if (err) {
+      console.log("Could not create RabbitMQ channel")
+    }
+    var queue = 'catalog-service-queue';
+
+    // Checks if a queue exists, if it doesn't it will be created
+    channel.assertQueue(queue, {
+      durable: false
+    });
+
+    // Consumes the messages from the queue
+    channel.consume(queue, function(message) {
+      consumer.consumeMsg(message)
+      channel.ack(message)
+    });
+  });
+});
 
 app.use(bodyParser.json()) //Parse request body to JSON
 if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show all logs when in production mode

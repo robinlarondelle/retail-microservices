@@ -1,6 +1,7 @@
 const ApiError = require('../models/error.model')
 const Product = require('../models/product.schema')
 const mongoose = require('mongoose');
+const publisher = require('../message_exchange/publisher')
 
 module.exports = {
     getProducts(req, res, next) {
@@ -24,6 +25,7 @@ module.exports = {
         }
 
         product.save().then(result => {
+            publisher.publishMsg("product_created", result)
             res.status(200).json(result).end();
         }).catch(err => {
             next(new ApiError("Whoops, an unexpected error occurred: " + err.message, 500));
