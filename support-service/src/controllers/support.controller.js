@@ -15,6 +15,10 @@ module.exports = {
     },
 
     createSupportTicket(req, res, next) {
+        
+
+
+
         const name = req.body.name
         const content = req.body.content
 
