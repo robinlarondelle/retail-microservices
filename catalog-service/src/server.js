@@ -48,18 +48,36 @@ amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
     if (err) {
       console.log("Could not create RabbitMQ channel")
     }
-    var queue = 'catalog-service-queue';
 
-    // Checks if a queue exists, if it doesn't it will be created
-    channel.assertQueue(queue, {
-      durable: false
-    });
+    let exchange = 'default'
+    let keys = ['catalog.#']
+    
+    // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
+    channel.assertExchange(exchange, 'topic', {
+      // The exchange will survive a broker restart
+      durable: true
+    })
 
-    // Consumes the messages from the queue
-    channel.consume(queue, function(message) {
-      consumer.consumeMsg(message)
-      channel.ack(message)
-    });
+    // Checks if the queue 'catalog-service-queue' exists, otherwise creates it
+    channel.assertQueue('catalog-service-queue', {
+      // The queue will survive a broker restart
+      durable: true
+    }, function(err, q) {
+      if (err) {
+        console.log("Could not connect to RabbitMQ queue")
+      }
+
+      // Bind the queue to every key we are listening to
+      keys.forEach(function(key) {
+        channel.bindQueue(q.queue, exchange, key);
+      })
+
+      // Send all incoming messages to the consumer
+      channel.consume(q.queue, function(message) {
+        consumer.consumeMsg(message)
+        channel.ack(message)
+      })
+    })
   });
 });
 

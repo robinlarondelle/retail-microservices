@@ -25,7 +25,7 @@ module.exports = {
         }
 
         product.save().then(result => {
-            publisher.publishMsg("product_created", result)
+            publisher.publishMsg("catalog.product.created", result)
             res.status(200).json(result).end();
         }).catch(err => {
             next(new ApiError("Whoops, an unexpected error occurred: " + err.message, 500));
