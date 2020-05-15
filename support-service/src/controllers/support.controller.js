@@ -1,53 +1,48 @@
 const Error = require('../models/error.model')
-const SupportTicketEvent = require('../models/supportTicketEvent.model')
+const SupportTicketWrapper = require("../models/SupportTicketWrapper.model")
+const SupportTicketEvent = require("../models/SupportTicketEvent.model")
+const SupportTicket = require("../models/SupportTicket.model")
 const events = require("../utils/events")
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
 
-const buildObject = tickets => {    
+const buildObject = events => {
     let returnObject = {}
-    tickets.forEach(x => {
-        Object.keys(x.data).forEach(y => {            
-            returnObject[y] = x.data[y]
+
+    events.forEach(x => {
+        Object.keys(x.data).forEach(y => {
+            if (y !== "_id") returnObject[y] = x.data[y]
         })
     })
+
     return returnObject
 }
 
 
 module.exports = {
     getAllSupportTickets(req, res, next) {
-        SupportTicketEvent.aggregate([
-            { 
-                $group: {
-                  _id: '$supportTicketID'
-                }
-              }
-        ]).then(result => {
+        SupportTicketWrapper.find({}).then(result => {
             res.status(200).json(result).end()
         })
     },
 
     getSupportTicketById(req, res, next) {
-        SupportTicketEvent
+        SupportTicketWrapper
             .find({ supportTicketID: req.params.id })
             .sort('-createdAt')
             .exec((err, events) => {
                 if (err) next(new Error(err, 500))
-                else if (events.length > 0) {  
-                    let newObject = buildObject(events)    
-                                          
+                else if (events.length > 0) {
+                    let newObject = buildObject(events[0].toObject().events)
+
                     const response = {
                         object: newObject,
                         supportTicketID: events[0].supportTicketID,
                         creator: events[0].author,
                         title: events[0].title,
+                        createdAt: events[0].createdAt,
                         lastUpdatedBy: events[events.length - 1].author,
                         history: []
-                    }                   
-
-                    //add all tickets to the history
-                    events.forEach(x => response.history.push(x))
+                    }
+                    events[0].toObject().events.forEach(x => response.history.push(x))
 
                     res.status(200).json(response).end()
                 } else res.status(404).json(new Error(`No Support Tickets with ID ${req.params.id} found.`))
@@ -55,35 +50,34 @@ module.exports = {
     },
 
     createSupportTicket(req, res, next) {
-        // SupportTicketEvent.find({}).then(x => x.map(x => x.remove()))
-        const supportTicketEvent = new SupportTicketEvent({
-            event: events.createdEvent,
-            data: req.body
+        SupportTicketWrapper.find({}).then(x => x.map(x => x.remove()))
+
+        const supportTicket = new SupportTicket(req.body)
+        new SupportTicketWrapper({
+            supportTicketID: supportTicket._id,
+            events: new SupportTicketEvent({
+                event: events.createdEvent,
+                author: supportTicket.creator,
+                data: supportTicket
+            })
         })
-
-        const createSupportTicketObject = supportTicketEvent.toObject()
-        createSupportTicketObject.supportTicketID = supportTicketEvent._id
-        const createdSupportTicketEvent = new SupportTicketEvent(createSupportTicketObject)
-
-        createdSupportTicketEvent.save().then(ticket => {
-            res.status(200).json(ticket).end()
-        }).catch(err => next(new Error(err, 500)))
+            .save()
+            .then(supportTickets => {
+                res.status(200).json(supportTickets).end()
+            })
     },
 
     updateSupportTicketById(req, res, next) {
         const id = req.params.id
 
-        SupportTicketEvent.find({ _id: id }).then(supportTickets => {
-            if (supportTickets.length != 0) {
-                const supportTicketEvent = new SupportTicketEvent({
-                    event: events.updatedEvent,
-                    supportTicketID: id,
-                    data: req.body.data,
-                    author: req.body.author
-                })
-
-                supportTicketEvent.save().then(ticket => {
-                    res.status(200).json(ticket).end()
+        SupportTicketWrapper.find({ supportTicketID: id }).then(supportTicket => {
+            if (supportTicket.length != 0) {
+                supportTicket = supportTicket[0]
+                const supportTicketEvent = new SupportTicketEvent(req.body)
+                supportTicketEvent.event = events.updatedEvent
+                supportTicket.events.push(supportTicketEvent)
+                supportTicket.save().then(ticket => {
+                    res.status(200).json(supportTicketEvent).end()
                 }).catch(err => next(new Error("An Error occured.", 500)))
             } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
         })
@@ -92,17 +86,14 @@ module.exports = {
     deleteSupportTicketById(req, res, next) {
         const id = req.params.id
 
-        SupportTicketEvent.find({ _id: id }).then(supportTickets => {
-            if (supportTickets.length != 0) {
-                const supportTicketEvent = new SupportTicketEvent({
-                    event: events.closedEvent,
-                    supportTicketID: id,
-                    data: req.body.data,
-                    author: req.body.author
-                })
-
-                supportTicketEvent.save().then(ticket => {
-                    res.status(200).json(ticket).end()
+        SupportTicketWrapper.find({ supportTicketID: id }).then(supportTicket => {
+            if (supportTicket.length != 0) {
+                supportTicket = supportTicket[0]
+                const supportTicketEvent = new SupportTicketEvent(req.body)
+                supportTicketEvent.event = events.closedEvent
+                supportTicket.events.push(supportTicketEvent)
+                supportTicket.save().then(ticket => {
+                    res.status(200).json(supportTicketEvent).end()
                 }).catch(err => next(new Error("An Error occured.", 500)))
             } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
         })
