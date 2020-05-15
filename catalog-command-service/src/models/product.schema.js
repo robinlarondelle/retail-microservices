@@ -29,11 +29,6 @@ const productSchema = mongoose.Schema({
         },
         required: [true, "Price is required"]
     },
-    active: {
-        type: Boolean,
-        default: true,
-        required: [true, "Product must have an active boolean"]
-    },
     tpv: {
         type: mongoose.Schema.Types.ObjectId,
         required: false

@@ -61,11 +61,11 @@ services:
       - rabbitmq
     restart: on-failure
     
-  catalog-service:
-    container_name: catalog-service
+  catalog-command-service:
+    container_name: catalog-command-service
     build:
       context: .
-      dockerfile: ./catalog-service/Dockerfile
+      dockerfile: ./catalog-command-service/Dockerfile
     ports:
     - "6000:6000"
     environment:
@@ -90,7 +90,24 @@ services:
       - DOCKER=true
     depends_on: 
       - mongodb
+      - rabbitmq
     links:
+      - rabbitmq
+    restart: on-failure
+
+  catalog-query-service:
+    container_name: catalog-query-service
+    build:
+      context: .
+      dockerfile: ./catalog-query-service/Dockerfile
+    ports:
+    - "8000:8000"
+    environment:
+      - PORT=8000
+      - DOCKER=true
+    depends_on: 
+      - rabbitmq
+    links: 
       - rabbitmq
     restart: on-failure
 
