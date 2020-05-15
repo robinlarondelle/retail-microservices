@@ -25,22 +25,22 @@ module.exports = {
         SupportTicketEvent
             .find({ supportTicketID: req.params.id })
             .sort('-createdAt')
-            .exec((err, tickets) => {
+            .exec((err, events) => {
                 if (err) next(new Error(err, 500))
-                else if (tickets.length > 0) {  
-                    let newObject = buildObject(tickets)    
+                else if (events.length > 0) {  
+                    let newObject = buildObject(events)    
                                           
                     const response = {
                         object: newObject,
-                        supportTicketID: tickets[0].supportTicketID,
-                        creator: tickets[0].author,
-                        title: tickets[0].title,
-                        lastUpdatedBy: tickets[tickets.length - 1].author,
+                        supportTicketID: events[0].supportTicketID,
+                        creator: events[0].author,
+                        title: events[0].title,
+                        lastUpdatedBy: events[events.length - 1].author,
                         history: []
                     }                   
 
                     //add all tickets to the history
-                    tickets.forEach(x => response.history.push(x))
+                    events.forEach(x => response.history.push(x))
 
                     res.status(200).json(response).end()
                 } else res.status(404).json(new Error(`No Support Tickets with ID ${req.params.id} found.`))
