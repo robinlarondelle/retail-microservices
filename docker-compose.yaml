@@ -90,6 +90,7 @@ services:
       - DOCKER=true
     depends_on: 
       - mongodb
+      - rabbitmq
     links:
       - rabbitmq
     restart: on-failure

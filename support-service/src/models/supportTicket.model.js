@@ -1,8 +1,6 @@
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-delete mongoose.connection.models['supportTicket'];
 
-const supportTicketSchema = new Schema({
+const supportTicketSchema = mongoose.Schema({
     subject: String,
     creator: String,
     email: String,

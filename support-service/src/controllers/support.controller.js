@@ -1,8 +1,10 @@
 const Error = require('../models/error.model')
-const SupportTicketWrapper = require("../models/SupportTicketWrapper.model")
-const SupportTicketEvent = require("../models/SupportTicketEvent.model")
-const SupportTicket = require("../models/SupportTicket.model")
+const mongoose = require('mongoose')
+const SupportTicketWrapper = mongoose.model('supportTicketWrapper')
+const SupportTicketEvent = mongoose.model('supportTicketEvent')
+const SupportTicket = mongoose.model('supportTicket')
 const events = require("../utils/events")
+const publisher = require("../utils/publisher")
 
 const buildObject = events => {
     let returnObject = {}
@@ -63,6 +65,7 @@ module.exports = {
         })
             .save()
             .then(supportTickets => {
+                publisher.publishMsg("support.created", supportTickets)
                 res.status(200).json(supportTickets).end()
             })
     },
@@ -77,6 +80,7 @@ module.exports = {
                 supportTicketEvent.event = events.updatedEvent
                 supportTicket.events.push(supportTicketEvent)
                 supportTicket.save().then(ticket => {
+                    publisher.publishMsg("support.updated", supportTicketEvent)
                     res.status(200).json(supportTicketEvent).end()
                 }).catch(err => next(new Error("An Error occured.", 500)))
             } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
@@ -93,6 +97,7 @@ module.exports = {
                 supportTicketEvent.event = events.closedEvent
                 supportTicket.events.push(supportTicketEvent)
                 supportTicket.save().then(ticket => {
+                    publisher.publishMsg("support.closed", supportTicketEvent)
                     res.status(200).json(supportTicketEvent).end()
                 }).catch(err => next(new Error("An Error occured.", 500)))
             } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
