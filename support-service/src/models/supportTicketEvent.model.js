@@ -1,17 +1,15 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const SupportTicket = require('./supportTicket.model')
 
-const supportTicketSchema = new Schema({
+const supportTicketEventsSchema = new Schema({
     event: String,
-    data: Schema.Types.Mixed,
-    supportTicketID: Schema.Types.ObjectId,
     author: String,
-    // timestamp: {
-    //     type: Schema.Types.Date,
-    //     default: new Date()
-    // }
+    comment: String,
+    data: [SupportTicket],
+    createdBy: String
 },
     { timestamps: true }
 )
 
-module.exports = mongoose.model("supportTicket", supportTicketSchema)
+module.exports = mongoose.model("supportTicket", supportTicketEventsSchema)
