@@ -18,8 +18,8 @@ const port = process.env.PORT || "4000"
 const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 
 let databaseString;
-if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogServiceDatabase}`
-else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogServiceDatabase}`
+if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.orderServiceDatabase}`
+else databaseString = `${dbConfig.localhostUrl}${dbConfig.orderServiceDatabase}`
 
 //MongoDB database connection
 mongoose.connect(databaseString, {
