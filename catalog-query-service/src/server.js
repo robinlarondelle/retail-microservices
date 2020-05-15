@@ -2,7 +2,6 @@ const express = require('express')
 const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
-const mongoose = require('mongoose')
 const ApiError = require('./models/error.model')
 const amqp = require('amqplib/callback_api')
 const consumer = require('./message_exchange/consumer')
@@ -20,22 +19,10 @@ const port = process.env.PORT || "6000"
 const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 
 let databaseString;
-if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogServiceDatabase}`
-else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogServiceDatabase}`
+if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogQueryServiceDatabase}`
+else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogQueryServiceDatabase}`
 
-//MongoDB database connection
-mongoose.connect(databaseString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('successfully connected to the database'))
-.catch(err => {
-  console.log('error connecting to the database')
-  console.log(err);
-
-  //Kill the service on error
-  process.exit()
-})
+//TODO Connect to SQL server
 
 // Connects to the RabbitMQ server
 amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
@@ -50,7 +37,7 @@ amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
     }
 
     let exchange = 'default'
-    let keys = ['catalog.#']
+    let keys = ['catalog.product.#', 'catalog.tpv.#']
     
     // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
     channel.assertExchange(exchange, 'topic', {
