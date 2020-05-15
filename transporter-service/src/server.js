@@ -50,7 +50,8 @@ amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
         }
 
         let exchange = 'default'
-        let keys = ['transporter.#']
+        // Listens to created Orders
+        let keys = ['order.created']
 
         // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
         channel.assertExchange(exchange, 'topic', {
