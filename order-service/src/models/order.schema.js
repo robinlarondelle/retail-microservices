@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Transporter = require('./transporter.model')
-const Product = require('./product.model')
+const Transporter = require('./transporter.schema')
+const Product = require('./product.schema')
 
-const OrderSchema = new Schema({
+const orderSchema = new Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
         required: [true, 'ObjectID is required']
@@ -66,21 +66,19 @@ const OrderSchema = new Schema({
         required: [true, 'E-mail is required.']
     },
     phone: {
-        type: Integer,
+        type: Number,
         validate: {
-            validator: (phone) => phone.length > 8,
+            validator: (phone) => phone >= 8,
             message: 'Phone number must be longer than 5 characters.'
         },
         required: [true, 'Phone number is required.']
     },
     transporter: {
-        type: Transporter,
-        required: false
+        type: Transporter.schema,
+        ref: 'transporter',
+        required: [false, 'Transporter is required.']
     },
-    product: {
-        type: [Product],
-        required: false
-    }
-});
+    products: [Product.schema],
+}, { versionKey: false });
 
-module.exports = OrderSchema;
+module.exports = mongoose.model('Order', orderSchema)
