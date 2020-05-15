@@ -1,5 +1,14 @@
 version: "3.8"
 services:
+
+  sqlserver: 
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=secure_password
+    ports:
+      - "1433:1433"
   
   mongodb:
     container_name: mongodb
