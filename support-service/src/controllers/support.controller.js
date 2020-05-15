@@ -17,8 +17,15 @@ const buildObject = tickets => {
 
 module.exports = {
     getAllSupportTickets(req, res, next) {
-        SupportTicketEvent.find({})
-            .then(supportTickets => res.status(200).json(supportTickets).end())
+        SupportTicketEvent.aggregate([
+            { 
+                $group: {
+                  _id: '$supportTicketID'
+                }
+              }
+        ]).then(result => {
+            res.status(200).json(result).end()
+        })
     },
 
     getSupportTicketById(req, res, next) {
@@ -48,7 +55,7 @@ module.exports = {
     },
 
     createSupportTicket(req, res, next) {
-        SupportTicketEvent.find({}).then(x => x.map(x => x.remove()))
+        // SupportTicketEvent.find({}).then(x => x.map(x => x.remove()))
         const supportTicketEvent = new SupportTicketEvent({
             event: events.createdEvent,
             data: req.body
