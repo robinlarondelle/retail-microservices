@@ -6,6 +6,14 @@
 # Environment files
 env
 
+# MS Office temp files
+*.tmp
+~$*.doc*
+*.~vsd*
+~$*.ppt*
+~$*.xls*
+Backup of *.doc*
+
 # Logs
 logs
 *.log
