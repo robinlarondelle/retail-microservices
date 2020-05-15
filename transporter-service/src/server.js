@@ -28,9 +28,9 @@ mongoose.connect(databaseString, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-    .then(() => console.log('successfully connected to the database'))
+    .then(() => console.log('Successfully connected to the database.'))
     .catch(err => {
-        console.log('error connecting to the database')
+        console.log('Error connecting to the database.')
         console.log(err);
 
         //Kill the service on error
@@ -40,13 +40,13 @@ mongoose.connect(databaseString, {
 // Connects to the RabbitMQ server
 amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
     if (err){
-        console.log("Could not connect to RabbitMQ server")
+        console.log("Could not connect to RabbitMQ server.")
     }
 
     // Creates a channel to communicatie through
     conn.createChannel(function(err, channel) {
         if (err) {
-            console.log("Could not create RabbitMQ channel")
+            console.log("Could not create RabbitMQ channel.")
         }
 
         let exchange = 'default'
@@ -64,7 +64,7 @@ amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
             durable: true
         }, function(err, q) {
             if (err) {
-                console.log("Could not connect to RabbitMQ queue")
+                console.log("Could not connect to RabbitMQ queue.")
             }
 
             // Bind the queue to every key we are listening to
