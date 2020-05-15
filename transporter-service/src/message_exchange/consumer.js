@@ -8,16 +8,13 @@ module.exports = {
 
         console.log("RabbitMQ message received with key: " + key)
         console.log("Message contains: " + message.content.toString())
-        if(key === "transporter.created"){
+        if(key === "order.created"){
             console.log("Detected order placement. Providing suitable Transporter for Order ID " + content._id + "..")
-
             // Randomizer
             // Get the count of all Transporters
             Transporter.countDocuments().exec(function (err, count) {
-
                 // Get a random entry
                 let random = Math.floor(Math.random() * count)
-
                 // Again query all users but only fetch one offset by our random #
                 Transporter.findOne({active:true}).skip(random).exec(
                     function (err, res, next) {
