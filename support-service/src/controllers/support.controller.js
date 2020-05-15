@@ -1,58 +1,104 @@
 const Error = require('../models/error.model')
-const SupportTicket = require('../models/supportTicket.model')
+const SupportTicketEvent = require('../models/supportTicketEvent.model')
+const events = require("../utils/events")
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
+
+const buildObject = tickets => {    
+    let returnObject = {}
+    tickets.forEach(x => {
+        Object.keys(x.data).forEach(y => {            
+            returnObject[y] = x.data[y]
+        })
+    })
+    return returnObject
+}
+
 
 module.exports = {
     getAllSupportTickets(req, res, next) {
-        SupportTicket.find({})
+        SupportTicketEvent.find({})
             .then(supportTickets => res.status(200).json(supportTickets).end())
     },
 
     getSupportTicketById(req, res, next) {
-        SupportTicket.find({id: req.params.id}).then(supportTicket => {
-            if (supportTicket) res.status(200).json(supportTicket).end()
-            else res.status(404).json(new Error(404, "The support ticket could not be found"))
-        })
+        SupportTicketEvent
+            .find({ supportTicketID: req.params.id })
+            .sort('-createdAt')
+            .exec((err, tickets) => {
+                if (err) next(new Error(err, 500))
+                else if (tickets.length > 0) {  
+                    let newObject = buildObject(tickets)    
+                                          
+                    const response = {
+                        object: newObject,
+                        supportTicketID: tickets[0].supportTicketID,
+                        creator: tickets[0].author,
+                        title: tickets[0].title,
+                        lastUpdatedBy: tickets[tickets.length - 1].author,
+                        history: []
+                    }                   
+
+                    //add all tickets to the history
+                    tickets.forEach(x => response.history.push(x))
+
+                    res.status(200).json(response).end()
+                } else res.status(404).json(new Error(`No Support Tickets with ID ${req.params.id} found.`))
+            })
     },
 
     createSupportTicket(req, res, next) {
-        
+        SupportTicketEvent.find({}).then(x => x.map(x => x.remove()))
+        const supportTicketEvent = new SupportTicketEvent({
+            event: events.createdEvent,
+            data: req.body
+        })
 
+        const createSupportTicketObject = supportTicketEvent.toObject()
+        createSupportTicketObject.supportTicketID = supportTicketEvent._id
+        const createdSupportTicketEvent = new SupportTicketEvent(createSupportTicketObject)
 
-
-        const name = req.body.name
-        const content = req.body.content
-
-        if (name && content) {
-            SupportTicket.findOne({name}).then(person => {
-                if (person) {
-                    SupportTicket.update({id: person.id}, {$push: {responses: {content}}}).then(updatedTicket => {
-                        res.status(200).json(updatedTicket).end()
-                    })
-                    .catch(err => res.status(400).json(new Error(400, err)).end())
-                } else {
-                    SupportTicket.create({name, responses: [{content: content}]}).then(supportTicket => {
-                        res.status(200).json(supportTicket).end()
-                    })
-                    .catch(err => res.status(400).json(new Error(400, err)).end())
-                }
-            }).catch(err => res.status(400).json(new Error(400, err)).end())
-        } else res.status(409).json(new Error(409, "The body provided was not valid, therefore the support ticket could not be made"))
+        createdSupportTicketEvent.save().then(ticket => {
+            res.status(200).json(ticket).end()
+        }).catch(err => next(new Error(err, 500)))
     },
 
     updateSupportTicketById(req, res, next) {
-        console.log("reached update");
-        
         const id = req.params.id
-        const content = req.body.content
-        console.log(id);
-        console.log(content);
-        console.log(id && content);
-        
 
-        if (id && content) {
-            SupportTicket.updateOne({id}, {content})
-                .then(updatedTicket => res.status(200).json(updatedTicket).end())
-                .catch(err => res.status(404).json(new Error(400, "The support ticket could not be found")).end())
-        } else res.status(409).json(new Error(409, "The body provided was not valid, therefore the reply could not be made")).end()
+        SupportTicketEvent.find({ _id: id }).then(supportTickets => {
+            if (supportTickets.length != 0) {
+                const supportTicketEvent = new SupportTicketEvent({
+                    event: events.updatedEvent,
+                    supportTicketID: id,
+                    data: req.body.data,
+                    author: req.body.author
+                })
+
+                supportTicketEvent.save().then(ticket => {
+                    res.status(200).json(ticket).end()
+                }).catch(err => next(new Error("An Error occured.", 500)))
+            } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
+        })
+    },
+
+    deleteSupportTicketById(req, res, next) {
+        const id = req.params.id
+
+        SupportTicketEvent.find({ _id: id }).then(supportTickets => {
+            if (supportTickets.length != 0) {
+                const supportTicketEvent = new SupportTicketEvent({
+                    event: events.closedEvent,
+                    supportTicketID: id,
+                    data: req.body.data,
+                    author: req.body.author
+                })
+
+                supportTicketEvent.save().then(ticket => {
+                    res.status(200).json(ticket).end()
+                }).catch(err => next(new Error("An Error occured.", 500)))
+            } else res.status(404).json(new Error(`No Support Ticket found with supportTicketID ${id}. Create a new Support Ticket first`))
+        })
     }
 }
+
