@@ -1,12 +1,17 @@
 const amqp = require('amqplib/callback_api')
 const consumer = require('./message_exchange/consumer')
 
+const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
+if (process.env.DOCKER) host = `${dbConfig.baseRabbitMqHost}`
+else host = `${dbConfig.localhostRabbitMqHost}`
+
 let exchange = 'default'
 let keys = ['catalog.product.#', 'catalog.tpv.#']
 
+
 module.exports = {
     openConnection: function openConnection(retries = 0) {
-        amqp.connect('amqp://rabbitmq:5672', (err, conn) => {
+        amqp.connect(host, (err, conn) => {
             // An error occurred while connecting to the RabbitMQ server
             if (err){
                 if (retries < 60) {

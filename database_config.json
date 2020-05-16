@@ -4,6 +4,8 @@
     "baseSqlUrl": "sqlserver",
     "localhostSqlUrl": "localhost:3306",
     "sqlUser": "root",
+    "baseRabbitMqHost": "amqp://rabbitmq:5672",
+    "localhostRabbitMqHost": "amqp://localhost:5672",
     "supportServiceDatabase": "/support-service",
     "orderServiceDatabase": "/order-service",
     "catalogServiceDatabase": "/catalog-service",
