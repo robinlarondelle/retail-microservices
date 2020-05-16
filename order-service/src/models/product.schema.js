@@ -8,7 +8,7 @@ const productSchema = new Schema({
     },
     name: {
         type: String,
-        required: [true, 'Name is required']
+        required: [false, 'Name is required']
     },
     amount: {
         type: Number,

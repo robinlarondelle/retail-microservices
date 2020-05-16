@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS product(
     description TEXT,
     price  VARCHAR(24),
     tpv VARCHAR(255),
-    active BOOLEAN NOT NULL
+    active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE INDEX id_index ON product(_id);

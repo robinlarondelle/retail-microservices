@@ -23,13 +23,11 @@ module.exports = {
     getAll(req, res, next) {
         Transporter.find()
             .then(result => {
-                publisher.publishMsg("transporter.getAll", result);
                 res.status(200).json(result)})
     },
     // Gets one specific transporter with the given ID
     getById(req, res, next) {
         Transporter.findOne({_id: req.params.id}).then(result => {
-            publisher.publishMsg("transporter.get", result);
             res.status(200).json(result)
         }).catch(err => {
             next(new ApiError("The transporter you are looking for does not exist in the Transporter database.", 404))

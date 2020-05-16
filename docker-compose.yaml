@@ -22,7 +22,7 @@ services:
       
   rabbitmq:
     container_name: rabbitmq
-    image: rabbitmq:3
+    image: rabbitmq:latest
     ports:
       - "4369:4369"
       - "5671:5671"
