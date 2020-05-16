@@ -34,6 +34,9 @@ mongoose.connect(databaseString, {
   //Kill the service on error
   process.exit()
 })
+require("./models/supportTicket.model")
+require("./models/supportTicketEvent.model")
+require("./models/supportTicketWrapper.model")
 
 const supportTicketRoute = require("./routes/support.route")
 

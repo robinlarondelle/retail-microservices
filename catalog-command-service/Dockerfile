@@ -8,8 +8,8 @@ WORKDIR /usr/src/app
 # to a certain directory INSIDE the docker container
 # In this case, we copy the package.json to the working directory
 # We dont copy all the files so that we can cache these steps
-COPY ./catalog-service/package.json .
-COPY ./catalog-service/package-lock.json .
+COPY ./catalog-command-service/package.json .
+COPY ./catalog-command-service/package-lock.json .
 
 #When the package.json file is transfered to the workdir, we want to install the npm dependencies 
 RUN npm install
@@ -22,7 +22,7 @@ RUN npm install
 COPY database_config.json .
 
 # This command tells Docker to copy ALL the source files to the workdirectory
-COPY ./catalog-service/. .
+COPY ./catalog-command-service/. .
 
 # Set the environment variables for our application
 ENV NODE_ENV=development DATABASE_CONFIG_LOCATION=../database_config.json

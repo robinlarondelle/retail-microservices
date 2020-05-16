@@ -3,6 +3,18 @@ const Order = require("../models/order.schema");
 const Product = require("../models/product.schema");
 const Transporter = require("../models/transporter.schema");
 const mongoose = require("mongoose");
+const publisher = require('../message_exchange/publisher');
+
+// Helper for checking for existing product.
+function productExists(id, callback) {
+    Product.findOne({ _id: id }).then((product) => {
+        if (product !== null) {
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
+}
 
 module.exports = {
   /**
