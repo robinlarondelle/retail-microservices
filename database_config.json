@@ -1,6 +1,8 @@
 {
     "baseUrl": "mongodb://mongodb:27017",
     "localhostUrl": "mongodb://localhost:27017",
+    "sqlUrl": "localhost",
+    "sqlPort": "3306",
     "supportServiceDatabase": "/support-service",
     "orderServiceDatabase": "/order-service",
     "catalogServiceDatabase": "/catalog-service",

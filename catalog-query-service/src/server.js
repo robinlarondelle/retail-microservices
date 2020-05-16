@@ -16,13 +16,6 @@ if (process.env.NODE_ENV == "development"){
 }
 
 const port = process.env.PORT || "6000"
-const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
-
-let databaseString;
-if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogQueryServiceDatabase}`
-else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogQueryServiceDatabase}`
-
-//TODO Connect to SQL server
 
 // Connects to the RabbitMQ server
 amqp.connect('amqp://rabbitmq:5672', function(err, conn) {

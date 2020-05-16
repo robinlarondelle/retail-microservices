@@ -25,7 +25,7 @@ COPY database_config.json .
 COPY ./catalog-query-service/. .
 
 # Set the environment variables for our application
-ENV NODE_ENV=development DATABASE_CONFIG_LOCATION=../database_config.json
+ENV NODE_ENV=development DATABASE_CONFIG_LOCATION=../database_config.json MYSQL_PASSWORD=5D4U9hjra2F9x4TD
 
 # Expose the port to the outside world of the container
 EXPOSE 3000
