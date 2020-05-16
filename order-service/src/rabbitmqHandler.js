@@ -1,12 +1,13 @@
 const amqp = require('amqplib/callback_api')
 const consumer = require('./message_exchange/consumer')
 
+//Sets configurable options for the RabbitMQ
 const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 if (process.env.DOCKER) host = `${dbConfig.baseRabbitMqHost}`
 else host = `${dbConfig.localhostRabbitMqHost}`
-
 let exchange = 'default'
 let keys = ['transporter.#', 'catalog.product.#']
+let queue = 'order-service-queue'
 
 module.exports = {
     openConnection: function openConnection(retries = 0) {
@@ -32,8 +33,8 @@ module.exports = {
                     else {
                         // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
                         channel.assertExchange(exchange, 'topic', { durable: true })
-                        // Checks if the queue 'catalog-query-service-queue' exists, otherwise creates it
-                        channel.assertQueue('catalog-query-service-queue', { durable: true }, (err, q) => {
+                        // Checks if the queue 'order-service-queue' exists, otherwise creates it
+                        channel.assertQueue(queue, { durable: true }, (err, q) => {
                             if (err) console.log("Could not connect to RabbitMQ queue")
                             else {
                                 // Bind the queue to every key we are listening for
