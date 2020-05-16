@@ -39,8 +39,8 @@ module.exports = {
 
         break;
       case "transporter.assigned":
-        let transporterId = content._id;
-        let orderId = content.orderID;
+        let transporterId = content.transporter_id;
+        let orderId = content.order_id;
 
         Order.findByIdAndUpdate(
           { _id: content._id },
