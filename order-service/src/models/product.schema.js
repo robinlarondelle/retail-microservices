@@ -4,11 +4,11 @@ const Schema = mongoose.Schema;
 const productSchema = new Schema({
     _id: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [false, 'ObjectID is required']
+        required: [true, 'ObjectID is required']
     },
     name: {
         type: String,
-        required: [false, 'Name is required']
+        required: [true, 'Name is required']
     },
     amount: {
         type: Number,

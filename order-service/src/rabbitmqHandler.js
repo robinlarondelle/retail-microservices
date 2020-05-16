@@ -1,13 +1,13 @@
 const amqp = require('amqplib/callback_api')
-const consumer = require('../message_exchange/consumer')
+const consumer = require('./message_exchange/consumer')
 
 //Sets configurable options for the RabbitMQ
-const dbConfig = require("../" + process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
+const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 if (process.env.DOCKER) host = `${dbConfig.baseRabbitMqHost}`
 else host = `${dbConfig.localhostRabbitMqHost}`
 let exchange = 'default'
-let keys = ['catalog.product.#', 'catalog.tpv.#']
-let queue = 'catalog-query-service-queue'
+let keys = ['transporter.#', 'catalog.product.#']
+let queue = 'order-service-queue'
 
 module.exports = {
     openConnection: function openConnection(retries = 0) {
@@ -33,7 +33,7 @@ module.exports = {
                     else {
                         // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
                         channel.assertExchange(exchange, 'topic', { durable: true })
-                        // Checks if the queue 'catalog-query-service-queue' exists, otherwise creates it
+                        // Checks if the queue 'order-service-queue' exists, otherwise creates it
                         channel.assertQueue(queue, { durable: true }, (err, q) => {
                             if (err) console.log("Could not connect to RabbitMQ queue")
                             else {
@@ -44,8 +44,8 @@ module.exports = {
 
                                 // Send all incoming messages to the consumer
                                 channel.consume(q.queue, (message) => {
-                                    consumer.consumeMsg(message, (msg) => {
-                                        channel.ack(msg)
+                                    consumer.consumeMsg(message, () => {
+                                        channel.ack(message)
                                     })
                                 })
                             }
