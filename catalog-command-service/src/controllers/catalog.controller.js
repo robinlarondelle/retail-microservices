@@ -2,6 +2,7 @@ const ApiError = require('../models/error.model')
 const Product = require('../models/product.schema')
 const mongoose = require('mongoose');
 const publisher = require('../message_exchange/publisher')
+const ThirdPartyVendor = require('../models/tpv.schema')
 
 module.exports = {
     postProduct(req, res, next) {
@@ -12,8 +13,10 @@ module.exports = {
             price: req.body.price
         })
         if (req.body.tpv != null) {
-            //TODO check if Third party vendor exists
-            product.tpv = req.body.tpv
+            ThirdPartyVendor.count({_id: req.body.tpv}, (err, count) => {
+                if (count>0) product.tpv = req.body.tpv
+                else next(new ApiError("The third party vendor you provided does not exist", 404))
+            })
         }
 
         product.save().then(result => {
