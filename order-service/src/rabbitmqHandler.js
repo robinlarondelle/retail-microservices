@@ -44,8 +44,8 @@ module.exports = {
 
                                 // Send all incoming messages to the consumer
                                 channel.consume(q.queue, (message) => {
-                                    consumer.consumeMsg(message, (msg) => {
-                                        channel.ack(msg)
+                                    consumer.consumeMsg(message, () => {
+                                        channel.ack(message)
                                     })
                                 })
                             }
