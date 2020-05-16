@@ -14,5 +14,5 @@ In the root of the project, run `docker-compose up --build` to create and run al
 Disclaimer: this repository is a shared project between 4 student. All 4 of us are responsible for the code.
 * [Sjoerd Schepers](https://github.com/sschepers)
 * [Robin La Rondelle](https://github.com/robinlarondelle)
-* [Tom Smits](https://github.com/tjfschoo)
-* [Tom Schoonbeek](https://github.com/teumaas)
+* [Tom Schoonbeek](https://github.com/tjfschoo)
+* [Tom Smits](https://github.com/teumaas)
