@@ -2,8 +2,8 @@ const express = require('express')
 const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
-const ApiError = require('./models/error.model')
-const RabbitMQ = require('./rabbitmqHandler')
+const ApiError = require('./error.model')
+const RabbitMQ = require('./handlers/rabbitmq.handler')
 
 const app = express()
 
@@ -22,7 +22,7 @@ if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show al
 app.use(cors('*'))
 
 // Routes all calls through the router
-const router = require('./routes/router')
+const router = require('./router')
 app.use('/', router)
 
 //Catch all non existing endpoints

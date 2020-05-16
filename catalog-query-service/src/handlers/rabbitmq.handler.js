@@ -1,10 +1,10 @@
 const amqp = require('amqplib/callback_api')
-const consumer = require('./message_exchange/consumer')
+const consumer = require('../message_exchange/consumer')
 
-const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
+//Sets configurable options for the RabbitMQ connection
+const dbConfig = require("../" + process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
 if (process.env.DOCKER) host = `${dbConfig.baseRabbitMqHost}`
 else host = `${dbConfig.localhostRabbitMqHost}`
-
 let exchange = 'default'
 let keys = ['catalog.product.#', 'catalog.tpv.#']
 
