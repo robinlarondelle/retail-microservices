@@ -26,10 +26,13 @@ module.exports = {
 
     deleteProduct(req, res, next) {
         Product.findOneAndDelete({_id: req.params.id}).then(result => {
-            publisher.publishMsg("catalog.product.deleted", result)
-            res.status(200).json(result).end();
+            if (result == null) next(new ApiError("The product you are trying to delete does not exist", 404));
+            else {
+                publisher.publishMsg("catalog.product.deleted", result)
+                res.status(200).json(result).end();
+            }
         }).catch(err => {
-            next(new ApiError("The product you are trying to delete does not exist", 404));
+            next(new ApiError("Whoops, an unexpected error occurred: " + err.message, 500));
         })
     }
 }
