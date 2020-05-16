@@ -1,27 +1,18 @@
-# Stepts taken to create the docker container:
+# Microservices: Retail casus
+This repository is an demonstration of microservices in Node.js with MongoDB, Docker and RabbitMQ among other things.
+The Retail casus is based on an assignment from the Software Solution course.
 
-1) create the docker file with a base image
-2) build the docker file using `docker build [-t <name>] .`
-   
-   The '.' specifies the folder from which to build the container. The -t file following a string marks the name of the image
+## How to run
+In the root of the project, run `docker-compose up --build` to create and run all the containers. Each microservice is running on it's own port:
 
-   **Building the container is important when you've made changes to the dockerfile!**
+* order-service: 4000
+* transporter-service: 5000
+* catalog-service: 6000
+* support-service: 7000
 
-3) Run the command `docker run [--name <test>] <image-name|image-id>` to run the previously build container
-
-
-## Commands
-* `docker ps [-a]` - check all the running containers (-a: including those running in the background)
-* `docker stop <name>` - stop the docker container with the specified name
-* `docker rm <name>` - deletes a image with the specified name
-* `docker build [-t <name>] <directory>` - build a new image from a Dockerfile with a optional name 
-* `docker run [--name <name>] <image-name>` - run a Docker Image with a optional name (--name)
-
-### docker Run flags
-* `-it` - Interactive terminal: makes you able to interact with the terminal (^C to quit the container)
-* `-p` - Port: map the open port from the container to a free port on the machine
-* `-d` - detached mode: don't display the terminal of the container (opposite of -it)
-
-
-## Docker Compose
-Use `docker-compose up --build` to make sure the containers are running
+## Contributors
+Disclaimer: this repository is a shared project between 4 student. All 4 of us are responsible for the code.
+* [Sjoerd Schepers](https://github.com/sschepers)
+* [Robin La Rondelle](https://github.com/robinlarondelle)
+* [Tom Smits](https://github.com/tjfschoo)
+* [Tom Schoonbeek](https://github.com/teumaas)
