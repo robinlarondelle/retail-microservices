@@ -2,6 +2,7 @@ const ApiError = require('../models/error.model')
 const ThirdPartyVendor = require('../models/tpv.schema')
 const Product = require('../models/product.schema')
 const mongoose = require('mongoose');
+const publisher = require('../message_exchange/publisher')
 
 module.exports = {
     postTpv(req, res, next) {

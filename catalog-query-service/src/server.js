@@ -3,8 +3,7 @@ const morgan = require("morgan") //HTTP request logger
 const bodyParser = require('body-parser') //Pase request body to JSON
 const cors = require("cors") // Access control
 const ApiError = require('./models/error.model')
-const amqp = require('amqplib/callback_api')
-const consumer = require('./message_exchange/consumer')
+const RabbitMQ = require('./rabbitmqHandler')
 
 const app = express()
 
@@ -15,58 +14,8 @@ if (process.env.NODE_ENV == "development"){
   require('dotenv').config({ path: "./environment/prod.env" })
 }
 
-const port = process.env.PORT || "6000"
-const dbConfig = require(process.env.DATABASE_CONFIG_LOCATION || "../../database_config.json")
-
-let databaseString;
-if (process.env.DOCKER) databaseString = `${dbConfig.baseUrl}${dbConfig.catalogQueryServiceDatabase}`
-else databaseString = `${dbConfig.localhostUrl}${dbConfig.catalogQueryServiceDatabase}`
-
-//TODO Connect to SQL server
-
-// Connects to the RabbitMQ server
-amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
-  if (err){
-    console.log("Could not connect to RabbitMQ server")
-  }
-
-  // Creates a channel to communicatie through
-  conn.createChannel(function(err, channel) {
-    if (err) {
-      console.log("Could not create RabbitMQ channel")
-    }
-
-    let exchange = 'default'
-    let keys = ['catalog.product.#', 'catalog.tpv.#']
-    
-    // Checks if the exchange 'default' exists, otherwise creates a new exchange of type 'topic'
-    channel.assertExchange(exchange, 'topic', {
-      // The exchange will survive a broker restart
-      durable: true
-    })
-
-    // Checks if the queue 'catalog-service-queue' exists, otherwise creates it
-    channel.assertQueue('catalog-service-queue', {
-      // The queue will survive a broker restart
-      durable: true
-    }, function(err, q) {
-      if (err) {
-        console.log("Could not connect to RabbitMQ queue")
-      }
-
-      // Bind the queue to every key we are listening to
-      keys.forEach(function(key) {
-        channel.bindQueue(q.queue, exchange, key);
-      })
-
-      // Send all incoming messages to the consumer
-      channel.consume(q.queue, function(message) {
-        consumer.consumeMsg(message)
-        channel.ack(message)
-      })
-    })
-  });
-});
+//Starts polling the RabbitMQ server
+RabbitMQ.openConnection();
 
 app.use(bodyParser.json()) //Parse request body to JSON
 if (process.env.NODE_ENV == "development") app.use(morgan("dev")) //dont show all logs when in production mode
@@ -87,4 +36,5 @@ app.use(function(err, req, res, next) {
 })
 
 //Setup server on designated port
+const port = process.env.PORT || "6000"
 app.listen(port, () => console.log(`Server is running on port: ${port}`))

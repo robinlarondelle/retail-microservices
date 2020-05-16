@@ -1,5 +1,16 @@
 version: "3.8"
 services:
+
+  sqlserver: 
+    container_name: sqlserver
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=5D4U9hjra2F9x4TD
+    volumes:
+      - sqldata:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   
   mongodb:
     container_name: mongodb
@@ -107,9 +118,12 @@ services:
       - DOCKER=true
     depends_on: 
       - rabbitmq
+      - sqlserver
     links: 
       - rabbitmq
+      - sqlserver
     restart: on-failure
 
 volumes:
-  mongodata:
+  mongodata: {}
+  sqldata: {}
