@@ -7,13 +7,13 @@ const publisher = require('../message_exchange/publisher');
 
 // Helper for checking for existing product.
 function productExists(id, callback) {
-    Product.findOne({ _id: id }).then((product) => {
-        if (product !== null) {
-            callback(true);
-        } else {
-            callback(false);
-        }
-    });
+  Product.findOne({ _id: id }).then((product) => {
+    if (product !== null) {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
 }
 
 module.exports = {
@@ -25,8 +25,8 @@ module.exports = {
 
   getOrders(req, res, next) {
     Order.find({}).then(order => {
-        res.status(200).json(order).end()
-      })
+      res.status(200).json(order).end()
+    })
       .catch((err) => {
         next(
           new ApiError(
@@ -47,36 +47,60 @@ module.exports = {
     Transporter.findOne({ _id: req.body.transporter._id })
       .populate({ path: "transporter", model: "Transporter" })
       .then((result) => {
-        const order = new Order({
-          _id: new mongoose.Types.ObjectId(),
-          shipped: req.body.shipped,
-          name: req.body.name,
-          street: req.body.street,
-          number: req.body.number,
-          city: req.body.city,
-          state: req.body.state,
-          country: req.body.country,
-          email: req.body.email,
-          phone: req.body.phone,
-          transporter: result,
-          products: req.body.products
-        })
 
-        order
-          .save()
-          .then((result) => {
-            Order.findOne({ _id: result._id })
-              .then((order) => res.send(order))
-              .catch(next);
+        let ids = []
+        req.body.products.forEach(p => ids.push(p._id))
+
+        Product.find({
+          '_id': {
+            $in: ids
+          }
+        }).then(productRes => {
+
+          let productAmounts = []
+          req.body.products.forEach(reqProd => {
+            productRes.forEach(prod => {
+              if (prod._id == reqProd._id) {
+                productAmounts.push({
+                  _id: prod._id,
+                  name: prod.name,
+                  amount: reqProd.amount
+                })
+              }
+            })
           })
-          .catch((err) => {
-            next(
-              new ApiError(
-                `Whoops, an unexpected error occurred: ${err.message}`,
-                500
-              )
-            );
-          });
+
+          const order = new Order({
+            _id: new mongoose.Types.ObjectId(),
+            shipped: req.body.shipped,
+            name: req.body.name,
+            street: req.body.street,
+            number: req.body.number,
+            city: req.body.city,
+            state: req.body.state,
+            country: req.body.country,
+            email: req.body.email,
+            phone: req.body.phone,
+            transporter: result,
+            products: productAmounts
+          })
+
+          order
+            .save()
+            .then((result) => {
+              Order.findOne({ _id: result._id })
+                .then((order) => res.send(order))
+                .catch(next);
+            })
+            .catch((err) => {
+              next(
+                new ApiError(
+                  `Whoops, an unexpected error occurred: ${err.message}`,
+                  500
+                )
+              );
+            });
+        })
       });
   },
 
@@ -105,12 +129,13 @@ module.exports = {
    */
 
   updateOrder(req, res, next) {
-    Order.findOneAndUpdate({ _id: req.params.id }, { shipped: req.body.shipped})
-    .then(result => {
-        if(result == null) next( new ApiError(404, `Order doesn't exist!`))
+    Order.findOneAndUpdate({ _id: req.params.id }, { shipped: req.body.shipped })
+      .then(result => {
+        if (result == null) next(new ApiError(404, `Order doesn't exist!`))
         else res.status(200).json(result).end()
-    })
-    .catch((err) => { next( new ApiError( `Whoops, an unexpected error occurred: ${err.message}`, 500));
-    });
+      })
+      .catch((err) => {
+        next(new ApiError(`Whoops, an unexpected error occurred: ${err.message}`, 500));
+      });
   },
 };
