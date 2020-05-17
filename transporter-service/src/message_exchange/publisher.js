@@ -7,13 +7,11 @@ module.exports = {
         amqp.connect('amqp://rabbitmq:5672', function(err, conn) {
             if (err){
                 console.log("Could not connect to RabbitMQ server")
-                messageQueue.insert({key: key, message: message})  
             } else {
                 // Creates a channel to communicatie through
                 conn.createChannel(function(err, channel) {
                     if (err){
                         console.log("Could not create RabbitMQ channel")
-                        messageQueue.insert({key: key, message: message})  
                     } else {
                         let exchange = 'default'
 
