@@ -10,7 +10,7 @@ services:
       - MYSQL_ROOT_PASSWORD=5D4U9hjra2F9x4TD
     volumes:
       - sqldata:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./catalog-query-service/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
   
   mongodb:
     container_name: mongodb
