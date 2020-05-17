@@ -1,5 +1,4 @@
 const amqp = require('amqplib/callback_api');
-let messageQueue = Array()
 
 module.exports = {
     publishMsg(key, message) {
