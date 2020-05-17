@@ -14,6 +14,8 @@ module.exports = {
         amqp.connect(host, (err, conn) => {
             // An error occurred while connecting to the RabbitMQ server
             if (err){
+                console.log("Failed connecting to RabbitMQ. Retrying...");
+                
                 if (retries < 60) {
                     // First 2 minutes, it will retry to connect every two seconds 
                     setTimeout(() => {
